@@ -7,7 +7,7 @@
 # ChangeLog (Who,When,What):
 # RRoot,1.1.2030,Created started script
 # RRoot,1.1.2030,Added code to complete assignment 5
-# <Your Name>,<Date>,Modified code to complete assignment 6
+# Lyndsey Holmes,17 August 2020,Modified code to complete assignment 6
 # ---------------------------------------------------------------------------- #
 
 # Data ---------------------------------------------------------------------- #
@@ -15,7 +15,7 @@
 strFileName = "ToDoFile.txt"  # The name of the data file
 objFile = None   # An object that represents a file
 dicRow = {}  # A row of data separated into elements of a dictionary {Task,Priority}
-lstTable = []  # A list that acts as a 'table' of rows
+list_of_rows = []  # A list that acts as a 'table' of rows
 strChoice = ""  # Captures the user option selection
 strTask = ""  # Captures the user task data
 strPriority = ""  # Captures the user priority data
@@ -44,18 +44,46 @@ class Processor:
 
     @staticmethod
     def add_data_to_list(task, priority, list_of_rows):
-        # TODO: Add Code Here!
+        """
+        Function that adds task and priority (input by user) to list of rows 
+
+        param task: (string) entered by user and placed in first column of dictionary1
+        param priority: (string) entered by user and placed in second column of dictionary
+        return list_of_rows: (list) filled with file data
+        """
+        dicRow = {'Task': task, 'Priority': priority}
+        list_of_rows.append(dicRow)
+
         return list_of_rows, 'Success'
+
 
     @staticmethod
     def remove_data_from_list(task, list_of_rows):
-        # TODO: Add Code Here!
+        """
+        Function removes task specified by user from list of rows
+
+        param task: (string) to be removed from the list of rows.  
+        return list_of_rows: (list) filled with dictionaries.  To remove dictionary with task 
+        provided as input by user.
+        """
+        count = 0
+        for row in list_of_rows:
+            if row['Task'] == task:
+                list_of_rows.pop(count)
+            count = count + 1
+
         return list_of_rows, 'Success'
+
 
     @staticmethod
     def write_data_to_file(file_name, list_of_rows):
-        # TODO: Add Code Here!
-        return list_of_rows, 'Success'
+        file = open(file_name, 'w')
+        for row in list_of_rows:
+            file.write(row['Task'] + ' , ' + row['Priority'] + '\n')
+        file.close()
+
+        return list_of_rows, 'Success'     
+
 
 # Presentation (Input/Output)  -------------------------------------------- #
 class IO:
@@ -77,6 +105,7 @@ class IO:
         ''')
         print()  # Add an extra line for looks
 
+
     @staticmethod
     def input_menu_choice():
         """ Gets the menu choice from a user
@@ -86,6 +115,7 @@ class IO:
         choice = str(input("Which option would you like to perform? [1 to 5] - ")).strip()
         print()  # Add an extra line for looks
         return choice
+
 
     @staticmethod
     def print_current_Tasks_in_list(list_of_rows):
@@ -100,6 +130,7 @@ class IO:
         print("*******************************************")
         print()  # Add an extra line for looks
 
+
     @staticmethod
     def input_yes_no_choice(message):
         """ Gets a yes or no choice from the user
@@ -107,6 +138,7 @@ class IO:
         :return: string
         """
         return str(input(message)).strip().lower()
+
 
     @staticmethod
     def input_press_to_continue(optional_message=''):
@@ -118,43 +150,51 @@ class IO:
         print(optional_message)
         input('Press the [Enter] key to continue.')
 
+
     @staticmethod
     def input_new_task_and_priority():
-        pass  # TODO: Add Code Here!
-        # return task, priority
+    
+        task = input("Enter name of task: ")
+        priority = input("Enter name of priority: ")
+        return task, priority
+
 
     @staticmethod
     def input_task_to_remove():
-        pass  # TODO: Add Code Here!
-        # return task
+    
+        task = input("Enter name of task you would like to remove: ")   # User input for removing task
+        return task
 
 # Main Body of Script  ------------------------------------------------------ #
 
 # Step 1 - When the program starts, Load data from ToDoFile.txt.
-Processor.read_data_from_file(strFileName, lstTable)  # read file data
+Processor.read_data_from_file(strFileName, list_of_rows)  # read file data
 
 # Step 2 - Display a menu of choices to the user
 while(True):
     # Step 3 Show current data
-    IO.print_current_Tasks_in_list(lstTable)  # Show current data in the list/table
+    IO.print_current_Tasks_in_list(list_of_rows)  # Show current data in the list/table
     IO.print_menu_Tasks()  # Shows menu
     strChoice = IO.input_menu_choice()  # Get menu option
     
     # Step 4 - Process user's menu choice
     if strChoice.strip() == '1':  # Add a new Task
-        # TODO: Add Code Here
+        task, priority = IO.input_new_task_and_priority()
+        Processor.add_data_to_list(task, priority, list_of_rows)
         IO.input_press_to_continue(strStatus)
         continue  # to show the menu
 
     elif strChoice == '2':  # Remove an existing Task
-        # TODO: Add Code Here
+
+        task = IO.input_task_to_remove()                                # Calling remove input output function        
+        Processor.remove_data_from_list(task, list_of_rows)             # Calling remove function
         IO.input_press_to_continue(strStatus)
         continue  # to show the menu
 
     elif strChoice == '3':   # Save Data to File
         strChoice = IO.input_yes_no_choice("Save this data to file? (y/n) - ")
         if strChoice.lower() == "y":
-            # TODO: Add Code Here!
+            Processor.write_data_to_file(strFileName, list_of_rows)
             IO.input_press_to_continue(strStatus)
         else:
             IO.input_press_to_continue("Save Cancelled!")
@@ -164,7 +204,7 @@ while(True):
         print("Warning: Unsaved Data Will Be Lost!")
         strChoice = IO.input_yes_no_choice("Are you sure you want to reload data from file? (y/n) -  ")
         if strChoice.lower() == 'y':
-            # TODO: Add Code Here!
+            Processor.read_data_from_file(strFileName, list_of_rows)
             IO.input_press_to_continue(strStatus)
         else:
             IO.input_press_to_continue("File Reload  Cancelled!")
